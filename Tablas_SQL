@@ -1,0 +1,45 @@
+# Para almacenar la información de los clientes se podría pensar en varias tablas con diferentes estructuras:
+
+## creación de tablas necesarias:
+
+# creación de tabla con información básica de los clientes:
+CREATE TABLE clientes(
+  id_cliente INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  apellido VARCHAR(100),
+  edad INT,
+  email VARCHAR(100),
+  telefono VARCHAR(100)
+);
+
+# creación de tabla de portafolios donde se almacena la información de los portafolios de inversión de cada cliente:
+CREATE TABLE portafolios(
+  id_portafolio INT PRIMARY KEY,
+  id_cliente INT,
+  tipo_inversion VARCHAR(50),
+  valor DECIMAL(10,2),
+  fecha_inicio DATE,
+  fecha_final DATE,
+  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);
+
+# almacena la información de las inversiones individuales dentro de cada portafolio
+CREATE TABLE inversiones(
+  id_inversion INT PRIMARY KEY,
+  id_portafolio INT,
+  nombre_inversion VARCHAR(100),
+  tipo_inversion VARCHAR(50),
+  valor DECIMAL(10,2), 
+  fecha_inicio DATE,
+  fecha_final DATE,
+  FOREIGN KEY (id_portafolio) REFERENCES clientes(id_portafolio)
+);
+
+
+
+
+
+
+
+
+
