@@ -36,6 +36,7 @@ CREATE TABLE portafolios(
   FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 );
 
+
 # almacena la información de las inversiones individuales dentro de cada portafolio
 CREATE TABLE inversiones(
   id_inversion INT PRIMARY KEY,
@@ -46,6 +47,53 @@ CREATE TABLE inversiones(
   fecha_inversion DATE,
   FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio)
 );
+
+# creación de tabla de activos 
+CREATE TABLE activos(
+  id_activo INT PRIMARY KEY AUTO_INCREMENT,
+  tipo_activo VARCHAR(255),
+  descripcion VARCHAR(255)
+);
+
+# creación de tabla de categorias de activos: 
+CREATE TABLE cat_activos(
+  id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+  nombre_categoria VARCHAR(255),
+  comision_diaria DECIMAL(5,4) -- comisión diaria proporcional al monto invertido
+)
+
+# creación de tabla de composición de portafolios con el fin de relacionar con los activos, es decir, 
+# detallando qué activos y en qué cantidad componen cada portafolio:
+CREATE TABLE comp_porta(
+  id_composicion INT PRIMARY KEY AUTO_INCREMENT, 
+  id_portafolio INT, 
+  id_activo INT, 
+  cantidad_activo DECIMAL(10,2),
+  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio),
+  FOREIGN KEY (id_activo) REFERENCES activos(id_activo)  
+);
+
+# creación de tabla de operaciones de los activos dentro de los portafolios:
+CREATE TABLE operaciones(
+  id_operacion INT PRIMARY KEY AUTO_INCREMENT,
+  id_portafolio INT, 
+  id_activo INT, 
+  Tipo_operacion ENUM('Apertura', 'Adición', 'Retiro', 'Cancelación'),
+  fecha_opracion DATE,
+  cantidad DECIMAL(10,2),
+  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio),
+  FOREIGN KEY (id_activo) REFERENCES activos(id_activo) 
+);
+
+# creación de la tabla para el control de comisiones: 
+CREATE TABLE comisiones(
+  id_comision INT PRIMEY KEY AUTO_INCREMENT,
+  id_composicion INT,
+  fecha DATE, 
+  monto_comision DECIMAL(15,2),
+  FOREIGN KEY (id_composicion) REFERENCES comp_porta(id_composicion)
+);
+
 
 
 
