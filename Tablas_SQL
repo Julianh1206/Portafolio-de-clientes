@@ -7,9 +7,10 @@ CREATE TABLE clientes(
   id_cliente INT PRIMARY KEY,
   nombre VARCHAR(100),
   apellido VARCHAR(100),
-  edad INT,
+  fecha_nacimiento DATE,
   email VARCHAR(100),
-  telefono VARCHAR(100)
+  telefono VARCHAR(100),
+  direccion VARCHAR(150)
 );
 
 # creación de tabla de portafolios donde se almacena la información de los portafolios de inversión de cada cliente:
