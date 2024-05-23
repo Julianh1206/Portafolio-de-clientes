@@ -1,4 +1,8 @@
-# Para almacenar la información de los clientes se podría pensar en varias tablas con diferentes estructuras:
+# Para diseñar estructuras de datos que almacenen la información de clientes y sus portafolios de inversión, es importante tener 
+# en cuenta varios aspectos claves para asegurar un rendimiento óptimo y una fácil gestión de la información por parte de cualquier
+# persona con acceso a la información. A continuación, se presenta un enfoque para bases de datos relacionales (SQL).
+
+# Siendo así, se mostrará el código fuente con sus respectivos comentarios y explicación en caso de ser necesario.
 
 ## creación de la base de datos:
 CREATE DATABASE portafolio_de_clientes;
@@ -6,93 +10,114 @@ USE portafolio_de_clientes;
 
 ## creación de tablas necesarias:
 
-# creación de tabla con información básica de los clientes:
+
+# creación de la tabla segmentos con sus respectivas clasificaciones de clientes: 
+CREATE TABLE segmentos(
+  id_segmento INT PRIMARY KEY, -- clave primaria (identificador único de cada segmento)
+  segmento VARCHAR(255) -- nombre descriptivo del segmento
+)
+## esta tabla se hace con el fin de definir la clasficación para cada cliente
+
+
+# creación de la tabla clientes: 
 CREATE TABLE clientes(
-  id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+  id_cliente INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único del cliente) 
   nombre VARCHAR(100),
-  apellido VARCHAR(100),
+  apellidos VARCHAR(100),
   fecha_nacimiento DATE,
   email VARCHAR(100),
   telefono VARCHAR(100),
   direccion VARCHAR(150),
-  id_segmento INT,
-  FOREIGN KEY (id_segmento) REFERENCES segmentos(id_segmento)
+  id_segmento INT,  -- Identificador del segmento al que pertenece el cliente
+  FOREIGN KEY (id_segmento) REFERENCES segmentos(id_segmento)  -- Clave foránea referenciando y relacionar directamente la tabla Segmentos
 );
+## Esta tabla contiene información básica sobre los clientes, incluyendo sus datos personales y el segmento al que pertenecen.
+## Contiene variables como el id_cliente, nombre, apellidos, dirección, entre otras variables de interés. 
 
-# creación de la tabla con información de segmentos a los que puedan pertenecer los clientes: 
-CREATE TABLE segmentos(
-  id_segmento INT PRIMARY KEY,
-  segmento VARCHAR(255)
-)
 
-# creación de tabla de portafolios donde se almacena la información de los portafolios de inversión de cada cliente:
+# creación de la tabla portafolios:
 CREATE TABLE portafolios(
-  id_portafolio INT PRIMARY KEY,
-  id_cliente INT,
-  nombre_portafolio VARCHAR(255)
-  tipo_inversion VARCHAR(50),
-  valor DECIMAL(10,2),
-  fecha_inicio DATE,
-  fecha_final DATE,
-  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+  id_portafolio INT PRIMARY KEY, -- clave primaria (identificador único de cada portafolio)
+  id_cliente INT, -- identificación única de cada cliente 
+  nombre_portafolio VARCHAR(255) -- nombre descriptivo del portafolio
+  fecha_apertura DATE, -- fecha de apertura del portafolio
+  estado VERCHAR(50), -- estado del portafolio (vigente o no vigente)
+  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) -- clave foranea para relacionar directamente con la tabla de clientes
 );
+## esta tabla portafolios contiene información sobre los portafonlios de inversión de cada cliente, conectando directamente 
+## con la tabla de la información básica de los clientes.
 
 
 # almacena la información de las inversiones individuales dentro de cada portafolio
 CREATE TABLE inversiones(
-  id_inversion INT PRIMARY KEY,
-  id_portafolio INT,
-  nombre_inversion VARCHAR(100),
-  tipo_inversion VARCHAR(50),
-  valor DECIMAL(10,2), 
-  fecha_inversion DATE,
-  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio)
+  id_inversion INT PRIMARY KEY,  -- clave primaria (identificador único de cada inversión)
+  id_portafolio INT, -- identificador único de cada portafolio
+  nombre_inversion VARCHAR(100), -- nombre descriptivo de la inversión
+  tipo_inversion VARCHAR(50), -- es útil para categorizar las inversiones (por ejemplo, acciones, bonos, fondos mutuos, etc)
+  valor DECIMAL(10,2), --  esto es crucial para calcular el valor total del portafolio y para realizar análisis financieros
+  fecha_inversion DATE, -- fecha en que se realizó la inversión
+  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio)  -- clave foranea para relacionar directamente con la tabla de portafolios.
 );
+## esta tabla de inversiones permitirá un seguimiento detallado de cada inversión realizada en cada portafolio, 
+## facilitando la gestión y el análisis de los portafolios de inversión.
 
-# creación de tabla de activos 
-CREATE TABLE activos(
-  id_activo INT PRIMARY KEY AUTO_INCREMENT,
-  tipo_activo VARCHAR(255),
-  descripcion VARCHAR(255)
-);
 
 # creación de tabla de categorias de activos: 
 CREATE TABLE cat_activos(
-  id_categoria INT PRIMARY KEY AUTO_INCREMENT,
-  nombre_categoria VARCHAR(255),
+  id_categoria INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada categoría de activos)
+  nombre_categoria VARCHAR(255), -- descripción de la categoria
   comision_diaria DECIMAL(5,4) -- comisión diaria proporcional al monto invertido
 )
+## esta tabla se crea con el fin de facilitar el seguimiento detallado de cada categoría de activos, además, permite calcular 
+## fácilmente las comisiones diarias basadas en la categoría de cada activo financiero.
 
-# creación de tabla de composición de portafolios con el fin de relacionar con los activos, es decir, 
-# detallando qué activos y en qué cantidad componen cada portafolio:
+
+# creación de tabla de activos 
+CREATE TABLE activos(
+  id_activo INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada activo)
+  tipo_activo VARCHAR(255), -- casificación del tipo de activo (por ejemplo: "Acciones", "Bonos", etc)
+  descripcion VARCHAR(255), -- descripción del activo
+  id_categoria INT, -- identificador de la categoría del activo
+  FOREIGN KEY (id_categoria) REFERENCES cat_activos(id_categoria) -- clave foranea para relacionar directamente con la tabla de portafolios.
+);
+## esta tabla permite llevar un mejor control sobre cada activo financiero disponible para inversión
+
+
+# creación de la tabla comp_porta (composición de portafolios):
 CREATE TABLE comp_porta(
-  id_composicion INT PRIMARY KEY AUTO_INCREMENT, 
-  id_portafolio INT, 
-  id_activo INT, 
-  cantidad_activo DECIMAL(10,2),
-  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio),
-  FOREIGN KEY (id_activo) REFERENCES activos(id_activo)  
+  id_composicion INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada composición)
+  id_portafolio INT, -- identificador del portafoleo 
+  id_activo INT, -- identificador de activo
+  cantidad_activo DECIMAL(10,2), -- cantidad del activo en el portafolio
+  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio), -- clave foranea para relacionar directamente con la tabla de portafolios.
+  FOREIGN KEY (id_activo) REFERENCES activos(id_activo)  -- clave foranea para relacionar directamente con la tabla de activos.
 );
+# creación de tabla de composición de portafolios con el fin de relacionar con los activos, es decir, detallando qué 
+# activos y en qué cantidad componen cada portafolio
 
-# creación de tabla de operaciones de los activos dentro de los portafolios:
+
+# creación de la tabla de operaciones de activos:
 CREATE TABLE operaciones(
-  id_operacion INT PRIMARY KEY AUTO_INCREMENT,
-  id_portafolio INT, 
-  id_activo INT, 
-  Tipo_operacion ENUM('Apertura', 'Adición', 'Retiro', 'Cancelación'),
-  fecha_opracion DATE,
-  cantidad DECIMAL(10,2),
-  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio),
-  FOREIGN KEY (id_activo) REFERENCES activos(id_activo) 
+  id_operacion INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada operación)
+  id_portafolio INT, -- identificador del portafoleo 
+  id_activo INT, -- identificador de activo
+  Tipo_operacion ENUM('Apertura', 'Adición', 'Retiro', 'Cancelación'), --  tipo de operación ("Apertura", "Adición", "Retiro", "Cancelación")
+  fecha_opracion DATE, -- fecha en la que se realizó la operación
+  cantidad DECIMAL(10,2), -- cantidad del activo en movimiento con la operación
+  FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio), -- clave foranea para relacionar directamente con la tabla de portafolios.
+  FOREIGN KEY (id_activo) REFERENCES activos(id_activo) -- clave foranea para relacionar directamente con la tabla de activos.
 );
+## esta tabla almacena las operaciones realizadas en los activos dentro de los portafolios.
 
-# creación de la tabla para el control de comisiones: 
+
+
+# creación de la tabla para el control y cálculo de comisiones: 
 CREATE TABLE comisiones(
-  id_comision INT PRIMEY KEY AUTO_INCREMENT,
-  id_composicion INT,
-  fecha DATE, 
-  monto_comision DECIMAL(15,2),
-  FOREIGN KEY (id_composicion) REFERENCES comp_porta(id_composicion)
+  id_comision INT PRIMEY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada comisión)
+  id_composicion INT, -- identificador único de la composición
+  fecha DATE, -- fecha de cálculo de la comisión
+  monto_comision DECIMAL(15,2), -- monto de la comisión calculada
+  FOREIGN KEY (id_composicion) REFERENCES comp_porta(id_composicion) -- clave foranea para relacionar directamente con la tabla de composición de portafoleos.
 );
 
 
@@ -113,7 +138,10 @@ FROM portafolios p;
 
 
 
-
+GENERALIDADES:
+tipos de datos 
+claves primarias 
+claves foraneas 
 
 
 
