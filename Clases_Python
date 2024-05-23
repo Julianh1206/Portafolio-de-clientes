@@ -1,4 +1,273 @@
-De la misma manera, otra idea creativa de escribir una estructura de datos para almacenar la información de clientes y sus portafolios 
-de inversión, es manejando clases en Python, aquí se muestran los códigos de la creación de cada clase con la misma estructura mostrada
-en el lenguaje de consulta SQL con las especificaciones dadas:
+# # Creación de portafolios de inversión en Python.
+# De la misma manera, otra idea creativa de escribir una estructura de datos para almacenar la información de clientes y sus portafolios 
+# de inversión, es manejando clases en Python, aquí se muestran los códigos de la creación de cada clase con la misma estructura mostrada
+# en el lenguaje de consulta SQL con las especificaciones dadas:
 
+# In[143]:
+
+
+## Importe de librarias necesarias para la creación de clases y sus componentes
+from datetime import date, datetime
+from decimal import Decimal
+from typing import List
+from collections import defaultdict
+
+
+# Siendo así, escribimos las clases necesarias para la creación de la estructura de datos. 
+# Aquí, se crean clases en lugar de tablas (lo hecho en SQL), ya que las clases nos dan una forma
+# de empaquetar datos y funcionalidad.
+
+# In[146]:
+
+
+## la definición de una clase viene acompañada de un nombre que inicia en mayúscula y luego
+## se definen las variables (atributos) y los tipos que se manejarán dentro de la clase
+class Segmento:
+    def __init__(self, id_segmento: int, segmento: str): 
+        self.id_segmento = id_segmento
+        self.segmento = segmento
+
+
+# Dado que todas las clases se crean de la misma manera, se prece a escribir cada una en celdas diferentes:
+
+# In[149]:
+
+
+class Cliente:
+    def __init__(self, id_cliente: int, nombre: str, apellidos: str, fecha_nacimiento: date, email: str, telefono: str, direccion: str, segmento: Segmento):
+        self.id_cliente = id_cliente
+        self.nombre = nombre
+        self.apellidos = apellidos
+        self.fecha_nacimiento = fecha_nacimiento
+        self.email = email
+        self.telefono = telefono
+        self.direccion = direccion
+        self.segmento = segmento
+        self.portafolios = []  # Lista de portafolios
+    def agregar_portafolio(self, portafolio):
+            self.portafolios.append(portafolio)
+
+
+# In[151]:
+
+
+class Portafolio:
+    def __init__(self, id_portafolio: int, cliente: Cliente, nombre_portafolio: str, fecha_apertura: date, estado: str):
+        self.id_portafolio = id_portafolio
+        self.cliente = cliente
+        self.nombre_portafolio = nombre_portafolio
+        self.fecha_apertura = fecha_apertura
+        self.estado = estado
+        self.inversiones = []  # Lista de inversiones
+    def agregar_inversion(self, inversion):
+        self.inversiones.append(inversion)
+
+
+# In[153]:
+
+
+class Inversion:
+    def __init__(self, id_inversion: int, portafolio: Portafolio, nombre_inversion: str, tipo_inversion: str, valor_inicial: Decimal, valor_actual: Decimal, fecha_inversion: date):
+        self.id_inversion = id_inversion
+        self.portafolio = portafolio
+        self.nombre_inversion = nombre_inversion
+        self.tipo_inversion = tipo_inversion
+        self.valor_inicial = valor_inicial
+        self.valor_actual = valor_actual
+        self.fecha_inversion = fecha_inversion
+
+
+# In[155]:
+
+
+class CategoriaActivo:
+    def __init__(self, id_categoria: int, nombre_categoria: str, comision_diaria: Decimal):
+        self.id_categoria = id_categoria
+        self.nombre_categoria = nombre_categoria
+        self.comision_diaria = comision_diaria
+
+
+# In[157]:
+
+
+class Activo:
+    def __init__(self, id_activo: int, tipo_activo: str, descripcion: str, categoria: CategoriaActivo):
+        self.id_activo = id_activo
+        self.tipo_activo = tipo_activo
+        self.descripcion = descripcion
+        self.categoria = categoria
+
+
+# In[159]:
+
+
+class ComposicionPortafolio:
+    def __init__(self, id_composicion: int, portafolio: Portafolio, activo: Activo, cantidad_activo: Decimal):
+        self.id_composicion = id_composicion
+        self.portafolio = portafolio
+        self.activo = activo
+        self.cantidad_activo = cantidad_activo
+
+
+# In[161]:
+
+
+class Operacion:
+    def __init__(self, id_operacion: int, portafolio: Portafolio, activo: Activo, tipo_operacion: str, fecha_operacion: date, cantidad: Decimal):
+        self.id_operacion = id_operacion
+        self.portafolio = portafolio
+        self.activo = activo
+        self.tipo_operacion = tipo_operacion
+        self.fecha_operacion = fecha_operacion
+        self.cantidad = cantidad
+
+
+# In[163]:
+
+
+class Comision:
+    def __init__(self, id_comision: int, composicion: ComposicionPortafolio, fecha: date, monto_comision: Decimal):
+        self.id_comision = id_comision
+        self.composicion = composicion
+        self.fecha = fecha
+        self.monto_comision = monto_comision
+
+
+# ### Explicación de las clases creadas, la información que almacena y sus atributos:
+# Segmento: almacena la información de la clasificación de clientes.
+# 
+# Cliente: almacena la información de los clientes. Incluye atributos personales y una lista de portafolios.
+# 
+# Portafolio: almacena la información de los portafolios de inversión de los clientes. Incluye una lista de inversiones.
+# 
+# Inversion: almacena la información de cada inversión individual en un portafolio.
+# lios.
+
+# CategoriaActivo: almacena la información de cada categoría de activos.
+# 
+# Activo: almacena la información de los activos financieros disponibles para inversión.
+# 
+# ComposicionPortafolio: almacena la composición de los portafolios, detallando los activos y su cantidad.
+# 
+# Operacion: almacena las operaciones realizadas en los activos dentro de los portafolios.
+# 
+# Comision: plmacena el cálculo de las comisiones generadas por los activos en los portafolios.
+
+# ## Solución a las preguntas propuestas:e
+
+# In[168]:
+
+
+# datos de ejemplo ingresados 
+segmento1 = Segmento(1, "Segmento A")
+cliente1 = Cliente(1, "Julián", "Saavedra", date(1980, 1, 1), "juan@example.com", "555-1234", "Calle Falsa 123", segmento1)
+cliente2 = Cliente(2, "Ana", "García", date(1990, 2, 2), "ana@example.com", "555-5678", "Calle Verdadera 456", segmento1)
+
+portafolio1 = Portafolio(1, "Julián Saavedra","Portafolio 1", date(2024, 1, 10), "Vigente")
+portafolio2 = Portafolio(2, "Ana García","Portafolio 2", date(2024, 2, 15), "No vigente")
+
+inversion1 = Inversion(1, portafolio1,"Inversion 1", "Acciones", Decimal("1000.00"), Decimal("1100.00"), date(2024, 1, 10))
+inversion2 = Inversion(2, portafolio2,"Inversion 2", "Bonos", Decimal("2000.00"), Decimal("2100.00"), date(2024, 2, 15))
+
+portafolio1.agregar_inversion(inversion1)
+portafolio2.agregar_inversion(inversion2)
+
+cliente1.agregar_portafolio(portafolio1)
+cliente2.agregar_portafolio(portafolio2)
+
+clientes = [cliente1, cliente2]
+
+comision1 = Comision(1, 1, date(2024, 1, 11), Decimal("10.00"))
+comision2 = Comision(2, 2, date(2024, 2, 16), Decimal("20.00"))
+comisiones = [comision1, comision2]
+
+operacion1 = Operacion(1, 1, 1, "Cancelación", date(2024, 3, 20), Decimal("100.00"))
+operacion2 = Operacion(2, 2, 2, "Cancelación", date(2024, 4, 25), Decimal("200.00"))
+operaciones = [operacion1, operacion2]
+
+
+# 1. Número de clientes por mes con al menos un portafolio activo:
+
+# In[172]:
+
+
+from collections import defaultdict
+from datetime import datetime
+
+# Datos de ejemplo (Normalmente, estos datos vendrían de una base de datos)
+clientes = [
+    # Asumiendo que ya tenemos una lista de clientes con sus portafolios asociados
+    cliente1, cliente2
+]
+
+# Diccionario para almacenar el número de clientes por mes
+clientes_por_mes = defaultdict(set)
+
+# Iterar sobre cada cliente y sus portafolios
+for cliente in clientes:
+    for portafolio in cliente.portafolios:
+        if portafolio.estado == "Vigente":
+            mes = portafolio.fecha_apertura.strftime('%Y-%m')
+            clientes_por_mes[mes].add(cliente.id_cliente)
+
+# Convertir el resultado en el formato requerido
+resultado_clientes_por_mes = {mes: len(clientes) for mes, clientes in clientes_por_mes.items()}
+print("Número de clientes por mes con al menos un portafolio activo:", resultado_clientes_por_mes)
+
+
+# 2. Número promedio de cancelaciones de portafolios por mes
+
+# In[174]:
+
+
+cancelaciones_por_mes = defaultdict(int)
+
+# Iterar sobre cada operación
+for operacion in operaciones:
+    if operacion.tipo_operacion == "Cancelación":
+        mes = operacion.fecha_operacion.strftime('%Y-%m')
+        cancelaciones_por_mes[mes] += 1
+
+# Calcular el número promedio de cancelaciones por mes
+total_cancelaciones = sum(cancelaciones_por_mes.values())
+total_meses = len(cancelaciones_por_mes)
+promedio_cancelaciones = (total_cancelaciones/total_meses) if total_meses > 0 else 0
+
+print("Número promedio de cancelaciones de portafolios por mes:", promedio_cancelaciones)
+
+
+# 3. Total de comisiones generadas por mes
+
+# In[176]:
+
+
+comisiones_por_mes = defaultdict(Decimal)
+
+# Iterar sobre cada comisión
+for comision in comisiones:
+    mes = comision.fecha.strftime('%Y-%m')
+    comisiones_por_mes[mes] += comision.monto_comision
+
+# Convertir el resultado en el formato requerido
+resultado_comisiones_por_mes = {mes: float(total) for mes, total in comisiones_por_mes.items()}
+print("Total de comisiones generadas por mes:", resultado_comisiones_por_mes)
+
+
+# 4. Rentabilidad media de los portafolios por segmento de clientes en el periodo generado
+
+# In[178]:
+
+
+rentabilidad_por_segmento = defaultdict(list)
+
+# Iterar sobre cada cliente y sus portafolios
+for cliente in clientes:
+    for portafolio in cliente.portafolios:
+        rentabilidad = sum(inversion.valor_actual - inversion.valor_inicial for inversion in portafolio.inversiones)
+        rentabilidad_por_segmento[cliente.segmento.segmento].append(rentabilidad)
+
+# Calcular la rentabilidad media por segmento
+rentabilidad_media_por_segmento = {segmento: sum(rentabilidades)/len(rentabilidades) 
+                                   for segmento, rentabilidades in rentabilidad_por_segmento.items()}
+
+print("Rentabilidad media de los portafolios por segmento de clientes:", rentabilidad_media_por_segmento)
