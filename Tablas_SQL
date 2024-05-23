@@ -1,25 +1,24 @@
-# Para diseñar estructuras de datos que almacenen la información de clientes y sus portafolios de inversión, es importante tener 
-# en cuenta varios aspectos claves para asegurar un rendimiento óptimo y una fácil gestión de la información por parte de cualquier
-# persona con acceso a la información. A continuación, se presenta un enfoque para bases de datos relacionales (SQL).
+Para diseñar estructuras de datos que almacenen la información de clientes y sus portafolios de inversión, es importante tener en cuenta varios aspectos claves para asegurar un rendimiento óptimo y una fácil gestión de la información por parte de cualquier persona con acceso a la información. A continuación, se presenta un enfoque para bases de datos relacionales (SQL).
 
-# Siendo así, se mostrará el código fuente con sus respectivos comentarios y explicación en caso de ser necesario.
+Siendo así, se mostrará el código fuente con sus respectivos comentarios y explicación en caso de ser necesario.
 
-## creación de la base de datos:
+## Creación de la base de datos:
 CREATE DATABASE portafolio_de_clientes DEFAULT CHARACTER SET utf8;
 USE portafolio_de_clientes;
 
-## creación de tablas necesarias:
+## Creación de tablas necesarias:
 
 
-# creación de la tabla segmentos con sus respectivas clasificaciones de clientes: 
+### Creación de la tabla segmentos con sus respectivas clasificaciones de clientes: 
 CREATE TABLE segmentos(
   id_segmento INT PRIMARY KEY, -- clave primaria (identificador único de cada segmento)
   segmento VARCHAR(255) -- nombre descriptivo del segmento
 );
-## esta tabla se hace con el fin de definir la clasficación para cada cliente
+
+Esta tabla se hace con el fin de definir la clasificación para cada cliente.
 
 
-# creación de la tabla clientes: 
+### Creación de la tabla clientes: 
 CREATE TABLE clientes(
   id_cliente INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único del cliente) 
   nombre VARCHAR(100),
@@ -31,11 +30,13 @@ CREATE TABLE clientes(
   id_segmento INT,  -- Identificador del segmento al que pertenece el cliente
   FOREIGN KEY (id_segmento) REFERENCES segmentos(id_segmento)  -- Clave foránea referenciando y relacionar directamente la tabla Segmentos
 );
-## Esta tabla contiene información básica sobre los clientes, incluyendo sus datos personales y el segmento al que pertenecen.
-## Contiene variables como el id_cliente, nombre, apellidos, dirección, entre otras variables de interés. 
+
+Esta tabla contiene información básica sobre los clientes, incluyendo sus datos personales y el segmento al que pertenecen.
+
+Contiene variables como el id_cliente, nombre, apellidos, dirección, entre otras variables de interés. 
 
 
-# creación de la tabla portafolios:
+### Creación de la tabla portafolios:
 CREATE TABLE portafolios(
   id_portafolio INT PRIMARY KEY, -- clave primaria (identificador único de cada portafolio)
   id_cliente INT, -- identificación única de cada cliente 
@@ -44,11 +45,11 @@ CREATE TABLE portafolios(
   estado VARCHAR(50), -- estado del portafolio (vigente o no vigente)
   FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) -- clave foranea para relacionar directamente con la tabla de clientes
 );
-## esta tabla portafolios contiene información sobre los portafonlios de inversión de cada cliente, conectando directamente 
-## con la tabla de la información básica de los clientes.
+
+Esta tabla portafolios contiene información sobre los portafolios de inversión de cada cliente, conectando directamente con la tabla de la información básica de los clientes.
 
 
-# almacena la información de las inversiones individuales dentro de cada portafolio
+### Cración de la tabla de inversiones 
 CREATE TABLE inversiones(
   id_inversion INT PRIMARY KEY,  -- clave primaria (identificador único de cada inversión)
   id_portafolio INT, -- identificador único de cada portafolio
@@ -59,21 +60,22 @@ CREATE TABLE inversiones(
   fecha_inversion DATE, -- fecha en que se realizó la inversión
   FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio)  -- clave foranea para relacionar directamente con la tabla de portafolios.
 );
-## esta tabla de inversiones permitirá un seguimiento detallado de cada inversión realizada en cada portafolio, 
-## facilitando la gestión y el análisis de los portafolios de inversión.
+
+Esta tabla de inversiones permitirá un seguimiento detallado de cada inversión individual realizada en cada portafolio, facilitando la gestión y el análisis de los portafolios de inversión.
 
 
-# creación de tabla de categorias de activos: 
+
+### Creación de tabla de categorias de activos: 
 CREATE TABLE cat_activos(
   id_categoria INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada categoría de activos)
   nombre_categoria VARCHAR(255), -- descripción de la categoria
   comision_diaria DECIMAL(5,4) -- comisión diaria proporcional al monto invertido
 );
-## esta tabla se crea con el fin de facilitar el seguimiento detallado de cada categoría de activos, además, permite calcular 
-## fácilmente las comisiones diarias basadas en la categoría de cada activo financiero.
+
+Esta tabla se crea con el fin de facilitar el seguimiento detallado de cada categoría de activos, además, permite calcular fácilmente las comisiones diarias basadas en la categoría de cada activo financiero.
 
 
-# creación de tabla de activos 
+### Creación de tabla de activos 
 CREATE TABLE activos(
   id_activo INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada activo)
   tipo_activo VARCHAR(255), -- casificación del tipo de activo (por ejemplo: "Acciones", "Bonos", etc)
@@ -81,10 +83,11 @@ CREATE TABLE activos(
   id_categoria INT, -- identificador de la categoría del activo
   FOREIGN KEY (id_categoria) REFERENCES cat_activos(id_categoria) -- clave foranea para relacionar directamente con la tabla de portafolios.
 );
-## esta tabla permite llevar un mejor control sobre cada activo financiero disponible para inversión
+
+Esta tabla permite llevar un mejor control sobre cada activo financiero disponible para inversión.
 
 
-# creación de la tabla comp_porta (composición de portafolios):
+### Creación de la tabla comp_porta (composición de portafolios):
 CREATE TABLE comp_porta(
   id_composicion INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada composición)
   id_portafolio INT, -- identificador del portafoleo 
@@ -93,11 +96,11 @@ CREATE TABLE comp_porta(
   FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio), -- clave foranea para relacionar directamente con la tabla de portafolios.
   FOREIGN KEY (id_activo) REFERENCES activos(id_activo)  -- clave foranea para relacionar directamente con la tabla de activos.
 );
-# creación de tabla de composición de portafolios con el fin de relacionar con los activos, es decir, detallando qué 
-# activos y en qué cantidad componen cada portafolio
+
+Creación de tabla de composición de portafolios con el fin de relacionar con los activos, es decir, detallando qué activos y en qué cantidad componen cada portafolio.
 
 
-# creación de la tabla de operaciones de activos:
+### Creación de la tabla de operaciones de activos:
 CREATE TABLE operaciones(
   id_operacion INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada operación)
   id_portafolio INT, -- identificador del portafoleo 
@@ -108,11 +111,12 @@ CREATE TABLE operaciones(
   FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio), -- clave foranea para relacionar directamente con la tabla de portafolios.
   FOREIGN KEY (id_activo) REFERENCES activos(id_activo) -- clave foranea para relacionar directamente con la tabla de activos.
 );
-## esta tabla almacena las operaciones realizadas en los activos dentro de los portafolios.
+
+Esta tabla almacena las operaciones realizadas en los activos dentro de los portafolios.
 
 
 
-# creación de la tabla para el control y cálculo de comisiones: 
+### Creación de la tabla para el control y cálculo de comisiones: 
 CREATE TABLE comisiones(
   id_comision INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada comisión)
   id_composicion INT, -- identificador único de la composición
@@ -122,7 +126,7 @@ CREATE TABLE comisiones(
 );
 
 
-# creación de estado del portafolio en vigente o no vigente 
+### Creación de estado del portafolio en vigente o no vigente 
 SELECT p.id_portafolio,
        p.nombre_portafolio,
        CASE 
@@ -136,11 +140,9 @@ SELECT p.id_portafolio,
 FROM portafolios p;
 
 
+Ahora, generando información sintética para las estructuras de datos propuestas anteriormente:
 
-
-# Ahora, generando información sintética para las estructuras de datos propuestas anteriormente:
-
-## 1. Número de clientes por mes con al menos un portafolio activo.
+### 1. Número de clientes por mes con al menos un portafolio activo.
 SELECT DATE_FORMAT(p.fecha_apertura, '%Y,%m') AS mes, -- extrae el año y el mes de la fecha de apertura del portafolio para agrupar por mes 
        COUNT(DISTINT p.id_cliente) AS numero_de_clientes -- número de clientes distintos en la tabla 
 FROM portafolios p -- especificación de la tabla 
@@ -150,8 +152,8 @@ ORDER BY mes; -- se ordena la tabla de resultados por mes
 
 
 
-## 2. Número promedio de cancelaciones de portafolios por mes.
-## Para ello primero se procede a contar e identificar las cancelaciones por mes:
+### 2. Número promedio de cancelaciones de portafolios por mes.
+#### Para ello primero se procede a contar e identificar las cancelaciones por mes:
 SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes, -- se formatea la fecha de operación para extraer el año y el mes.
        COUNT(o.id_operacion) AS numero_de_cancelaciones -- se cuentas las operaciones de cancelación
 FROM operaciones o -- se especifica que es la tabla de operaciones de donde se saca la información 
@@ -159,7 +161,7 @@ WHERE o.Tipo_operacion = 'Cancelación' -- se filtran solamente las operaciones 
 GROUP BY DATE_FORMAT(o.fecha_opracion, '%Y-%m') -- se agrupan las cancelaciones por mes
 ORDER BY mes; -- se ordenan los resultados de la consulta por mes
 
-## luego, se procede a calcular el promedio mensual de las cancelaciones
+#### Luego, se procede a calcular el promedio mensual de las cancelaciones
 SELECT AVG(mensual.numero_de_cancelaciones) AS promedio_mensual_cancelaciones
 FROM (SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes,
        COUNT(o.id_operacion) AS numero_de_cancelaciones
@@ -170,7 +172,7 @@ FROM (SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes,
 
 
 
-## 3. Total de comisiones generadas por mes.
+### 3. Total de comisiones generadas por mes.
 SELECT DATE_FORMAT(c.fecha, '%Y-%m') AS mes, -- fecha en que se generó la comisión
        SUM(c.monto_comision) AS total_comisiones -- suma de todas las comisiones para cada mes
 FROM comisiones c -- especificaciones de la tabla de trabajo
@@ -179,8 +181,8 @@ ORDER BY mes; -- se ordenan los resultados por mes
 
 
 
-## 4. Rentabilidad media de los portafolios por segmento de clientes en el periodo generado.
-## primero, se crea una vista para calcular la rentabilidad de cada portafolio
+### 4. Rentabilidad media de los portafolios por segmento de clientes en el periodo generado.
+#### Primero, se crea una vista para calcular la rentabilidad de cada portafolio
 CREATE VIEW rentabilidad_portafolio AS -- una vista es una tabla virtual basada en una consulta, en este caso llamada rentabilidad_portafolio
 SELECT p.id_portafolio, p.id_cliente, -- se selecciona el id de cada cliente y el id de cada portafolio como variables
     SUM(i.valor_actual - i.valor_inicial) AS rentabilidad -- se calcula la rentabilidad de cada portafolio
@@ -188,7 +190,7 @@ FROM portafolios p -- especificación de la tabla de trabajo
 JOIN inversiones i ON p.id_portafolio = i.id_portafolio -- se unen las tablas de portafolios e  inversiones con la llave 'id_portafolio'
 GROUP BY p.id_portafolio, p.id_cliente; -- de agrupa por portafolio y cliente para asegurarse de que la rentabilidad se calcula para cada portafolio individualmente.
 
-## segundo, se crea una vista para unir la rentabilidad de los portafolios con los segmentos de clientes
+#### Segundo, se crea una vista para unir la rentabilidad de los portafolios con los segmentos de clientes
 CREATE VIEW rentabilidad_por_segmento AS -- se crea una vista llamada rentabilidad_por_segmento
 SELECT rp.id_portafolio, rp.id_cliente, rp.rentabilidad, c.id_segmento -- selección de variables 
 FROM rentabilidad_portafolio rp -- especificación de la vista 
@@ -196,7 +198,7 @@ JOIN clientes c ON rp.id_cliente = c.id_cliente; -- une la vista rentabilidad_cl
                                                  -- portafolio con el segmento del cliente propietario del portafolio.
 
 
-## tercero y último, se encuentra la rentabilidad media de los portafolios por segmento de clientes en el periodo generado
+#### Tercero y último, se encuentra la rentabilidad media de los portafolios por segmento de clientes en el periodo generado
 SELECT s.segmento, AVG(rps.rentabilidad) AS rentabilidad_media -- nombre del segmento y la rentabilidad media de ese segmento
 FROM rentabilidad_por_segmento rps 
 JOIN segmentos s ON rps.id_segmento = s.id_segmento -- se una la vista rentabilidad_por_segmento con la tabla segmentos por medio del id
