@@ -54,7 +54,8 @@ CREATE TABLE inversiones(
   id_portafolio INT, -- identificador único de cada portafolio
   nombre_inversion VARCHAR(100), -- nombre descriptivo de la inversión
   tipo_inversion VARCHAR(50), -- es útil para categorizar las inversiones (por ejemplo, acciones, bonos, fondos mutuos, etc)
-  valor DECIMAL(10,2), --  esto es crucial para calcular el valor total del portafolio y para realizar análisis financieros
+  valor_inicial DECIMAL(10,2), --  valor inicial de las inversiones
+  valor_actual DECIMAL(10,2), --  valor actual de las inversiones 
   fecha_inversion DATE, -- fecha en que se realizó la inversión
   FOREIGN KEY (id_portafolio) REFERENCES portafolios(id_portafolio)  -- clave foranea para relacionar directamente con la tabla de portafolios.
 );
@@ -148,6 +149,7 @@ GROUP BY DATE_FORMAT(p.fecha_apertura, '%Y-%m') -- se agrupan los resultados de 
 ORDER BY mes; -- se ordena la tabla de resultados por mes
 
 
+
 ## 2. Número promedio de cancelaciones de portafolios por mes.
 ## Para ello primero se procede a contar e identificar las cancelaciones por mes:
 SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes, -- se formatea la fecha de operación para extraer el año y el mes.
@@ -168,6 +170,40 @@ FROM (SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes,
 
 
 
+## 3. Total de comisiones generadas por mes.
+SELECT DATE_FORMAT(c.fecha, '%Y-%m') AS mes, -- fecha en que se generó la comisión
+       SUM(c.monto_comision) AS total_comisiones -- suma de todas las comisiones para cada mes
+FROM comisiones c -- especificaciones de la tabla de trabajo
+GROUP BY DATE_FORMAT(c.fecha, '%Y-%m') -- se agrupan las cancelaciones por mes
+ORDER BY mes; -- se ordenan los resultados por mes
+
+
+
+## 4. Rentabilidad media de los portafolios por segmento de clientes en el periodo generado.
+## primero, se crea una vista para calcular la rentabilidad de cada portafolio
+CREATE VIEW rentabilidad_portafolio AS -- una vista es una tabla virtual basada en una consulta, en este caso llamada rentabilidad_portafolio
+SELECT p.id_portafolio, p.id_cliente, -- se selecciona el id de cada cliente y el id de cada portafolio como variables
+    SUM(i.valor_actual - i.valor_inicial) AS rentabilidad -- se calcula la rentabilidad de cada portafolio
+FROM portafolios p -- especificación de la tabla de trabajo
+JOIN inversiones i ON p.id_portafolio = i.id_portafolio -- se unen las tablas de portafolios e  inversiones con la llave 'id_portafolio'
+GROUP BY p.id_portafolio, p.id_cliente; -- de agrupa por portafolio y cliente para asegurarse de que la rentabilidad se calcula para cada portafolio individualmente.
+
+## segundo, se crea una vista para unir la rentabilidad de los portafolios con los segmentos de clientes
+CREATE VIEW rentabilidad_por_segmento AS -- se crea una vista llamada rentabilidad_por_segmento
+SELECT rp.id_portafolio, rp.id_cliente, rp.rentabilidad, c.id_segmento -- selección de variables 
+FROM rentabilidad_portafolio rp -- especificación de la vista 
+JOIN clientes c ON rp.id_cliente = c.id_cliente; -- une la vista rentabilidad_cliente para asociar la rentabilidad de cada 
+                                                 -- portafolio con el segmento del cliente propietario del portafolio.
+
+
+## tercero y último, se encuentra la rentabilidad media de los portafolios por segmento de clientes en el periodo generado
+SELECT s.segmento, AVG(rps.rentabilidad) AS rentabilidad_media -- nombre del segmento y la rentabilidad media de ese segmento
+FROM rentabilidad_por_segmento rps 
+JOIN segmentos s ON rps.id_segmento = s.id_segmento -- se una la vista rentabilidad_por_segmento con la tabla segmentos por medio del id
+JOIN portafolios p ON rps.id_portafolio = p.id_portafolio -- se una la vista rentabilidad_por_segmento con la tabla portafolios por medio del id
+WHERE YEAR(p.fecha_apertura) = YEAR(CURDATE())  -- Filtrar por el año actual
+GROUP BY s.segmento; -- agrupar los resultados por segmentos
+
 
 
 
@@ -180,7 +216,7 @@ GENERALIDADES:
 tipos de datos 
 claves primarias 
 claves foraneas 
-
+las vistas nos ayudan a no consumir muchos recursos de memoria creando tablas... bla bla bla 
 
 
 
