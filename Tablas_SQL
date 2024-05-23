@@ -29,6 +29,7 @@ CREATE TABLE segmentos(
 CREATE TABLE portafolios(
   id_portafolio INT PRIMARY KEY,
   id_cliente INT,
+  nombre_portafolio VARCHAR(255)
   tipo_inversion VARCHAR(50),
   valor DECIMAL(10,2),
   fecha_inicio DATE,
@@ -93,6 +94,24 @@ CREATE TABLE comisiones(
   monto_comision DECIMAL(15,2),
   FOREIGN KEY (id_composicion) REFERENCES comp_porta(id_composicion)
 );
+
+
+# creación de estado del portafolio en vigente o no vigente 
+SELECT p.id_portafolio,
+       p.nombre_portafolio,
+       CASE 
+          WHEN EXISTS(SELECT 1
+                      FROM comp_porta cp
+                      WHERE cp.id_portafolio = p.id_portafolio
+                      AND cp.cantidad_activo > 0) 
+          THEN 'Vigente'
+          ELSE 'No vigente'
+      END AS estado
+FROM portafolios p;
+
+
+
+
 
 
 
