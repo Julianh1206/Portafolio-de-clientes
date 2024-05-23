@@ -137,6 +137,44 @@ FROM portafolios p;
 
 
 
+# Ahora, generando información sintética para las estructuras de datos propuestas anteriormente:
+
+## 1. Número de clientes por mes con al menos un portafolio activo.
+SELECT DATE_FORMAT(p.fecha_apertura, '%Y,%m') AS mes, -- extrae el año y el mes de la fecha de apertura del portafolio para agrupar por mes 
+       COUNT(DISTINT p.id_cliente) AS numero_de_clientes -- número de clientes distintos en la tabla 
+FROM portafolios p -- especificación de la tabla 
+WHERE p.estado = 'Vigente' -- filtración de portafolios en estado 'Vigente'
+GROUP BY DATE_FORMAT(p.fecha_apertura, '%Y-%m') -- se agrupan los resultados de la consulta por año-mes de la fecha de apertura
+ORDER BY mes; -- se ordena la tabla de resultados por mes
+
+
+## 2. Número promedio de cancelaciones de portafolios por mes.
+## Para ello primero se procede a contar e identificar las cancelaciones por mes:
+SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes, -- se formatea la fecha de operación para extraer el año y el mes.
+       COUNT(o.id_operacion) AS numero_de_cancelaciones -- se cuentas las operaciones de cancelación
+FROM operaciones o -- se especifica que es la tabla de operaciones de donde se saca la información 
+WHERE o.Tipo_operacion = 'Cancelación' -- se filtran solamente las operaciones de tipo 'Cancelación'
+GROUP BY DATE_FORMAT(o.fecha_opracion, '%Y-%m') -- se agrupan las cancelaciones por mes
+ORDER BY mes; -- se ordenan los resultados de la consulta por mes
+
+## luego, se procede a calcular el promedio mensual de las cancelaciones
+SELECT AVG(mensual.numero_de_cancelaciones) AS promedio_mensual_cancelaciones
+FROM (SELECT DATE_FORMAT(o.fecha_opracion, '%Y-%m') AS mes,
+       COUNT(o.id_operacion) AS numero_de_cancelaciones
+       FROM operaciones o
+       WHERE o.Tipo_operacion = 'Cancelación'
+       GROUP BY DATE_FORMAT(o.fecha_opracion, '%Y-%m')
+) AS mensual;
+
+
+
+
+
+
+
+
+
+
 
 GENERALIDADES:
 tipos de datos 
