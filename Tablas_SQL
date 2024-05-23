@@ -5,7 +5,7 @@
 # Siendo así, se mostrará el código fuente con sus respectivos comentarios y explicación en caso de ser necesario.
 
 ## creación de la base de datos:
-CREATE DATABASE portafolio_de_clientes;
+CREATE DATABASE portafolio_de_clientes DEFAULT CHARACTER SET utf8;
 USE portafolio_de_clientes;
 
 ## creación de tablas necesarias:
@@ -15,7 +15,7 @@ USE portafolio_de_clientes;
 CREATE TABLE segmentos(
   id_segmento INT PRIMARY KEY, -- clave primaria (identificador único de cada segmento)
   segmento VARCHAR(255) -- nombre descriptivo del segmento
-)
+);
 ## esta tabla se hace con el fin de definir la clasficación para cada cliente
 
 
@@ -39,9 +39,9 @@ CREATE TABLE clientes(
 CREATE TABLE portafolios(
   id_portafolio INT PRIMARY KEY, -- clave primaria (identificador único de cada portafolio)
   id_cliente INT, -- identificación única de cada cliente 
-  nombre_portafolio VARCHAR(255) -- nombre descriptivo del portafolio
+  nombre_portafolio VARCHAR(255), -- nombre descriptivo del portafolio
   fecha_apertura DATE, -- fecha de apertura del portafolio
-  estado VERCHAR(50), -- estado del portafolio (vigente o no vigente)
+  estado VARCHAR(50), -- estado del portafolio (vigente o no vigente)
   FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) -- clave foranea para relacionar directamente con la tabla de clientes
 );
 ## esta tabla portafolios contiene información sobre los portafonlios de inversión de cada cliente, conectando directamente 
@@ -68,7 +68,7 @@ CREATE TABLE cat_activos(
   id_categoria INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada categoría de activos)
   nombre_categoria VARCHAR(255), -- descripción de la categoria
   comision_diaria DECIMAL(5,4) -- comisión diaria proporcional al monto invertido
-)
+);
 ## esta tabla se crea con el fin de facilitar el seguimiento detallado de cada categoría de activos, además, permite calcular 
 ## fácilmente las comisiones diarias basadas en la categoría de cada activo financiero.
 
@@ -114,7 +114,7 @@ CREATE TABLE operaciones(
 
 # creación de la tabla para el control y cálculo de comisiones: 
 CREATE TABLE comisiones(
-  id_comision INT PRIMEY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada comisión)
+  id_comision INT PRIMARY KEY AUTO_INCREMENT, -- clave primaria (identificador único de cada comisión)
   id_composicion INT, -- identificador único de la composición
   fecha DATE, -- fecha de cálculo de la comisión
   monto_comision DECIMAL(15,2), -- monto de la comisión calculada
