@@ -208,17 +208,31 @@ GROUP BY s.segmento; -- agrupar los resultados por segmentos
 
 
 
+## GENERALIDADES
+Aquí se explicarán algunas generalidades sobre el código para tener más claridad sobre él
+
+### Tipos de datos:
+1. en la creación de tablas el término INT hace referencia a un número entero, por ejemplo: 1, 2, 4, 100, etc...
+2. en la creación de tablas el término DECIMAL(n, m) hace referencia a números decimales con una buena precisión, donde n es el total
+de dígitos y m es número de digitos después del punto decimal, por ejemplo: DECIMAL(10,6) podría ser 1234.456789.
+3. en la creación de tablas el término VARCHAR(n) representa una cadena de caracteres con una longitud máxima de n, por ejemplo:
+VARCHAR(15) podría ser 'Julián Saavedra' como máximo número de caracteres.
+4. en la creación de tablas el término DATE representa una fecha en formato 'YYYY-MM-DD' (AÑO, MES, DÍA).
+
+### Claves primarias:
+las claves primarias (PRIMARY KEY) son atributos que se le dan a las tablas para que cada observación tenga una identificación única, no
+es posible contener espacios vaíos en ellas ni NA, esto con la inteción de garantizar la integridad y unicidad de los datos.
+
+### Claves foráneas:
+las claves foráneas son atributos que establecen una relación directa entre dos tablas de una base de datos relacional (en este caso
+hemos trabajado con una base de datos relacional (estructurada)), estas claves garantizan que las relaciones sean coherentes y válidas. 
 
 
-
-
-
-
-GENERALIDADES:
-tipos de datos 
-claves primarias 
-claves foraneas 
-las vistas nos ayudan a no consumir muchos recursos de memoria creando tablas... bla bla bla 
+### Creación de vistas (CREATE VIEW):
+Una creación de vista nos ayuda a crear un objeto dentro de la base de datos fundamentado en una consulta, es decir, se podría considerar 
+como una tabla flotante que no está directamente definida en la base de datos pero sí se puede llamar en caso de necesitarla. 
+Las vistas ayudan a no consumir muchos recursos en la creación de tablas y, además, nos facilita el trabajo para la realización 
+de consultas complejas. 
 
 
 
