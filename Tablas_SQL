@@ -239,9 +239,4 @@ como una tabla flotante que no está directamente definida en la base de datos p
 Las vistas ayudan a no consumir muchos recursos en la creación de tablas y, además, nos facilita el trabajo para la realización 
 de consultas complejas. 
 
-
-
-
-
-
-
+NOTA: como recomendación, es de preferencia usar para este problema SQL, dada su facilidad y su manejo.
